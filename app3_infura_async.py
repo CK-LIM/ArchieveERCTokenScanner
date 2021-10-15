@@ -294,105 +294,71 @@ def revertTransaction(targetRevertBlk):
 # Check Holder Balance at history block 
 # #############################################################################################################
 def checkBalance(checkBlkNum, revertEndblk ,blockGap, iterations):
+    
+    if checkBlkNum < revertEndblk:
+        print("target block is out of the range")
+        return
+    i = 0
+    with open("event_transfer_balance.csv", 'r', newline='') as csv_balancefile:
+        csv_reader = csv.DictReader(csv_balancefile)        
 
-    # with open("event_transfer_balance.csv", 'r', newline='') as csv_balancefile:
-    #     blkList = []
-    #     csv_reader = csv.DictReader(csv_balancefile)
-    #     # Get target row/blocknumber
-    #     row1 = next(csv_reader)
-    #     lastEventBlock = int(row1["blockNumber"])
-    #     # for row in csv_reader:
-    #     #     block = row["blockNumber"]
-    #     #     blkList.insert(0,int(block))
-    #     #     print(block)
-    #     # print(blkList)
-    #     # lastEventBlock = blkList[-1]
-    #     print(lastEventBlock)
+        print(checkBlkNum)
+        for rows in csv_reader:
+            block = rows["blockNumber"]
+            print(block)
+            if checkBlkNum < int(block):
+                continue
+            else:
+                targetBlk = block
+                targetBalance = rows
 
-    for i in range(iterations):
-        print(i)
-        if checkBlkNum < revertEndblk:
-            print("target block is out of the range")
-            return
+                with open("target_balance.csv", 'a', newline='') as csv_balancefile:
+                    csv_writer = csv.DictWriter(csv_balancefile, fieldnames=targetBalance)
+                    csv_writer.writerow(targetBalance)
+                csv_balancefile.close()
 
-        # for blk in blkList:
-        #     print(checkBlkNum)
-            # if checkBlkNum >= int(blk):
-        #         targetBlk = blk
-        #     else:
-        #         break
-        # print(targetBlk)
-        # if targetBlk == 0:
-        #     print("target block is out of the database")
-        #     return
-        # print("...")
-
-
-
-        with open("event_transfer_balance.csv", 'r', newline='') as csv_balancefile:
-            # blkList = []
-            csv_reader = csv.DictReader(csv_balancefile)        
-            # print(csv_reader)
-            print(checkBlkNum)
-            for rows in csv_reader:
-                block = rows["blockNumber"]
-                print(block)
-                if checkBlkNum < int(block):
-                    continue
-                else:
-                    targetBlk = block
-                    targetBalance = rows
+                checkBlkNum -= blockGap
+                i+=1
+                if i >= iterations:
                     break
-            print(targetBlk)
-                # if targetBlk == int(block):
-                #     targetBalance = rows
-                #     break    
+                continue
+        print(targetBlk)  
 
-        with open("target_balance.csv", 'a', newline='') as csv_balancefile:
-            csv_writer = csv.DictWriter(csv_balancefile, fieldnames=targetBalance)
-            # csv_writer.writeheader()
-            csv_writer.writerow(targetBalance)
-        csv_balancefile.close()
-        print("xxx")
-        checkBlkNum -= blockGap
+    
+    # for i in range(iterations):
+    #     print(i)
+    #     if checkBlkNum < revertEndblk:
+    #         print("target block is out of the range")
+    #         return
 
+    #     with open("event_transfer_balance.csv", 'r', newline='') as csv_balancefile:
+    #         csv_reader = csv.DictReader(csv_balancefile)        
+ 
+    #         print(checkBlkNum)
+    #         for rows in csv_reader:
+    #             block = rows["blockNumber"]
+    #             print(block)
+    #             if checkBlkNum < int(block):
+    #                 continue
+    #             else:
+    #                 targetBlk = block
+    #                 targetBalance = rows
+    #                 break
+    #         print(targetBlk)  
+
+    #     with open("target_balance.csv", 'a', newline='') as csv_balancefile:
+    #         csv_writer = csv.DictWriter(csv_balancefile, fieldnames=targetBalance)
+    #         csv_writer.writerow(targetBalance)
+    #     csv_balancefile.close()
+    #     print("xxx")
+    #     checkBlkNum -= blockGap
+
+
+    # for i in range(iterations):
+    #     print(i)
 
     print("Done extract target balance")
 
-    # with open("balanceNew.json", 'r') as balance_file:
-    #     dataBalance = json.load(balance_file)
-    #     datablkNumber = dataBalance["blockNumber"]
-    #     blkList = []
-    #     for item in datablkNumber:
-    #         x = item
-    #         blkList.insert(0,int(x))
-    #     print("...")
-    #     print(blkList)
-    #     targetBlk = 0
-    #     for blk in blkList:
-    #         if checkBlkNum >= blk:
-    #             targetBlk = blk
-    #         else:
-    #             break
-    #     print(targetBlk)
-    #     if targetBlk == 0:
-    #         print("target block is out of the database")
-    #         return
-    #     targetBalance = dataBalance["blockNumber"][str(targetBlk)]
-    #     print(targetBalance)     
-        
-    # balance_file.close()
-
-    # with open("targetbalance.json", 'r') as targetbalance_file:
-    #     targetBalanceJson = json.load(targetbalance_file)  
-    #     newTargetBalanceJson = {targetBlk: {}}
-    #     targetBalanceJson.update(newTargetBalanceJson)
-    #     targetBalanceJson[targetBlk].update(targetBalance)
-    # targetbalance_file.close()
-
-    # with open("targetbalance.json", 'w') as targetbalance_file:
-    #     json.dump((targetBalanceJson), targetbalance_file, indent=4)
-    # targetbalance_file.close()
 
 # #############################################################################################################
 # Calculate average Holder Balance for a priod
@@ -515,20 +481,21 @@ def getFinalHolderBalancekey_value():
 
 # async def main():
 def main():
-#     # xInitializeBlk = 11995475     #(Apr-04-2021 08:59:52 PM +UTC) contract created time
-#     revertStartblk = 12678020       # (Jun-21-2021 02:00:09 PM +UTC)
-#     revertEndblk = 12678020
+    xInitializeBlk = 11995475     #(Apr-04-2021 08:59:52 PM +UTC) contract created time
+    revertStartblk = 12678020       # (Jun-21-2021 02:00:09 PM +UTC)
+    revertEndblk = 12678020  
+    revertTargetStartblk = 13410485   # (Oct-13-2021 02:21:14 PM +UTC) Before PundiX chain go live
 #     # blk = web3.eth.blockNumber - 1000
 #     # toBlock = xInitializeBlk +170500
 #     # latestblk = web3.eth.blockNumber
-#     # startblk = latestblk -300
-#     # queryEvent(startblk, "latest" )
-
+    # queryEvent(xInitializeBlk, "latest" )
+    # asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    # asyncio.run((extractHolder()))
 #     # task1 = asyncio.create_task(extractHolder())
 #     # await task1
-#     # revertTransaction(revertStartblk)
-#     checkBalance(revertStartblk, revertEndblk ,5760, 120)
-    # calAvgBalance()
+    # revertTransaction(revertStartblk)
+    checkBalance(revertTargetStartblk, revertEndblk ,5760, 116)
+    calAvgBalance()
     getFinalHolderBalanceList()
     getFinalHolderBalancekey_value()
 
