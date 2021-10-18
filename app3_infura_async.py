@@ -193,27 +193,17 @@ def revertTransaction(targetRevertBlk):
     addList = oridataBalance["blockNumber"][str(lastEventBlock)]
 
     with open("event_transfer_balance.csv", 'w', newline='') as csv_balancefile:
-        # writer = csv.writer(data_balancefile)
-        # items = dataBalance["blockNumber"][str(lastEventBlock)].items()
-        # writer.writerow([key for key, value in items])
-        # writer.writerow([value for key, value in items])
 
         addData = [oridataBalance["blockNumber"][str(lastEventBlock)]]
         csv_writer = csv.DictWriter(csv_balancefile, fieldnames=addList)
         csv_writer.writeheader()
         for add in addData:
-            # print(add)
             csv_writer.writerow(add)         
 
     csv_balancefile.close()
 
     with open("balanceNew.json", 'w') as balance_file:
         json.dump(oridataBalance, balance_file, indent=4)
-
-    # with open("targetbalance.json", 'w') as targetbalance_file:
-    #     json.dump({}, targetbalance_file, indent=4)
-    # targetbalance_file.close()
-    # print("Done Revert Holder Balance")
 
     with open("target_balance.csv", 'w', newline='') as csv_balancefile:
 
@@ -230,10 +220,15 @@ def revertTransaction(targetRevertBlk):
     csv_balancefile.close()
 
 
+
+    with open("balanceNew.json", 'r') as balance_file:
+        dataBalance = json.load(balance_file)
+
     with open("event.json", 'r') as event_file:
         data = json.load(event_file)
         i = len(data)
         print(i)
+
         ## Get event data from latest to oldest
         for index in range(len(data)):
             addressFrom = data[f"event{i-1}"]["args"]["from"]
@@ -244,40 +239,20 @@ def revertTransaction(targetRevertBlk):
             if targetRevertBlk > eventblocknumber:
                 break
 
-            with open("balanceNew.json", 'r') as balance_file:
-                dataBalance = json.load(balance_file)
-                latestBlock = dataBalance['latestBalanceBlock']
-                newBlkNumber = {eventblocknumber: dataBalance['blockNumber'][f"{lastEventBlock}"]}
-                dataBalance = {'latestBalanceBlock' : latestBlock, 'blockNumber': newBlkNumber}
-            balance_file.close()
-
-            # print("....")
-
-            with open("balanceNew.json", 'w') as balancefile:
-                json.dump(dataBalance, balancefile, indent=4)
-            balancefile.close()
-
-            with open("balanceNew.json", 'r') as balance_file:
-                dataBalance = json.load(balance_file)
+            latestBlock = dataBalance['latestBalanceBlock']
+            newBlkNumber = {f"{eventblocknumber}": dataBalance['blockNumber'][f"{lastEventBlock}"]}
+            dataBalance = {'latestBalanceBlock' : latestBlock, 'blockNumber': newBlkNumber}
             dataBalance['blockNumber'][f"{eventblocknumber}"]["blockNumber"] = eventblocknumber   
             dataBalance['blockNumber'][f"{eventblocknumber}"][addressTo] -= value
             dataBalance['blockNumber'][f"{eventblocknumber}"][addressFrom] += value
 
-            with open("balanceNew.json", 'w') as balance_file:
-                json.dump(dataBalance, balance_file, indent=4)
-
             addList = dataBalance["blockNumber"][str(eventblocknumber)]
-            with open("event_transfer_balance.csv", 'a', newline='') as csv_balancefile:
-                # writer = csv.writer(data_balancefile)
-                # items = dataBalance["blockNumber"][str(lastEventBlock)].items()
-                # writer.writerow([key for key, value in items])
-                # writer.writerow([value for key, value in items])
 
+            with open("event_transfer_balance.csv", 'a', newline='') as csv_balancefile:
                 addData = [dataBalance["blockNumber"][str(eventblocknumber)]]
                 csv_writer = csv.DictWriter(csv_balancefile, fieldnames=addList)
-                # csv_writer.writeheader()
+
                 for add in addData:
-                    # print(add)
                     csv_writer.writerow(add)        
 
             csv_balancefile.close()
@@ -286,9 +261,65 @@ def revertTransaction(targetRevertBlk):
             print(lastEventBlock)
             i -= 1
 
+        with open("balanceNew.json", 'w') as balance_file:
+            json.dump(dataBalance, balance_file, indent=4)
+
     event_file.close()
 
     print("Done Revert transaction Holder Balance")
+
+    # with open("event.json", 'r') as event_file:
+    #     data = json.load(event_file)
+    #     i = len(data)
+    #     print(i)
+    #     ## Get event data from latest to oldest
+    #     for index in range(len(data)):
+    #         addressFrom = data[f"event{i-1}"]["args"]["from"]
+    #         addressTo = data[f"event{i-1}"]["args"]["to"]
+    #         value = data[f"event{i-1}"]["args"]["value"]
+    #         eventblocknumber = data[f"event{i-1}"]["blockNumber"]
+
+    #         if targetRevertBlk > eventblocknumber:
+    #             break
+
+    #         with open("balanceNew.json", 'r') as balance_file:
+    #             dataBalance = json.load(balance_file)
+    #             latestBlock = dataBalance['latestBalanceBlock']
+    #             newBlkNumber = {eventblocknumber: dataBalance['blockNumber'][f"{lastEventBlock}"]}
+    #             dataBalance = {'latestBalanceBlock' : latestBlock, 'blockNumber': newBlkNumber}
+    #         balance_file.close()
+
+    #         with open("balanceNew.json", 'w') as balancefile:
+    #             json.dump(dataBalance, balancefile, indent=4)
+    #         balancefile.close()
+
+    #         with open("balanceNew.json", 'r') as balance_file:
+    #             dataBalance = json.load(balance_file)
+    #         dataBalance['blockNumber'][f"{eventblocknumber}"]["blockNumber"] = eventblocknumber   
+    #         dataBalance['blockNumber'][f"{eventblocknumber}"][addressTo] -= value
+    #         dataBalance['blockNumber'][f"{eventblocknumber}"][addressFrom] += value
+
+    #         with open("balanceNew.json", 'w') as balance_file:
+    #             json.dump(dataBalance, balance_file, indent=4)
+
+    #         addList = dataBalance["blockNumber"][str(eventblocknumber)]
+
+    #         with open("event_transfer_balance.csv", 'a', newline='') as csv_balancefile:
+    #             addData = [dataBalance["blockNumber"][str(eventblocknumber)]]
+    #             csv_writer = csv.DictWriter(csv_balancefile, fieldnames=addList)
+
+    #             for add in addData:
+    #                 csv_writer.writerow(add)        
+
+    #         csv_balancefile.close()
+            
+    #         lastEventBlock = data[f"event{i-1}"]["blockNumber"]
+    #         print(lastEventBlock)
+    #         i -= 1
+
+    # event_file.close()
+
+
 
 # #############################################################################################################
 # Check Holder Balance at history block 
@@ -493,12 +524,12 @@ def main():
     # asyncio.run((extractHolder()))
 #     # task1 = asyncio.create_task(extractHolder())
 #     # await task1
-    # revertTransaction(revertStartblk)
+    revertTransaction(revertStartblk)
     checkBalance(revertTargetStartblk, revertEndblk ,5760, 116)
     calAvgBalance()
     getFinalHolderBalanceList()
     getFinalHolderBalancekey_value()
-
+    print("--- %s seconds ---" % (time.time() - start_time))
 
 if __name__ == "__main__":     # __name__ is a built-in variable in Python which evaluates to the name of the current module.
     main()
