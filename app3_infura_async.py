@@ -519,9 +519,9 @@ def main():
 #     # blk = web3.eth.blockNumber - 1000
 #     # toBlock = xInitializeBlk +170500
 #     # latestblk = web3.eth.blockNumber
-    # queryEvent(xInitializeBlk, "latest" )
-    # asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    # asyncio.run((extractHolder()))
+    queryEvent(xInitializeBlk, "latest" )
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    asyncio.run((extractHolder()))
 #     # task1 = asyncio.create_task(extractHolder())
 #     # await task1
     revertTransaction(revertStartblk)
