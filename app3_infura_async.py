@@ -16,14 +16,10 @@ import  aiohttp
 
 start_time = time.time()
 #Connect Ethereum node 
-# ganache_url = "http://127.0.0.1:8545"
-# web3 = Web3(Web3.HTTPProvider(ganache_url)) 
-infuraKey = '0866de87b4de4c7f843156d964c88c0a'
+infuraKey = ''
 infura = "https://mainnet.infura.io/v3/"+infuraKey
 web3 = Web3(Web3.HTTPProvider(infura))  
- 
-# web3 = Web3(Web3.HTTPProvider("https://eth-mainnet.functionx.io"))
-print(web3.isConnected())
+ print(web3.isConnected())
 print(web3.eth.blockNumber)
 latestBlk = web3.eth.blockNumber
 
@@ -118,7 +114,7 @@ async def extractHolder():
             # for add in account['blockNumber'][latestBlock]:
             #     if add == "blockNumber":
             #         continue
-            # z =[session.post("https://mainnet.infura.io/v3/0866de87b4de4c7f843156d964c88c0a", json=payload_call, headers=headers) for add in account]
+            # z =[session.post("https://mainnet.infura.io/v3/", json=payload_call, headers=headers) for add in account]
             # responses = await asyncio.gather(*z)
             # results =[]
             # for response in responses:
@@ -169,7 +165,7 @@ def getBalance(account, latestBlock, session):
            "id":1}
         if add == "blockNumber":
             continue
-        tasks.append(session.post("https://mainnet.infura.io/v3/0866de87b4de4c7f843156d964c88c0a", json=payload_call, headers=headers))
+        tasks.append(session.post("https://mainnet.infura.io/v3/", json=payload_call, headers=headers))
     # print(tasks)
     return tasks
     # account['blockNumber'][latestBlock][add] = y
