@@ -10,17 +10,12 @@ import time
 
 start_time = time.time()
 #Connect Ethereum node 
-# ganache_url = "http://127.0.0.1:8545"
 # web3 = Web3(Web3.HTTPProvider(ganache_url)) 
-infuraKey = 'e4736089aa4c4c40a260e06af316a7a9'
+infuraKey = ''
 infura = "https://mainnet.infura.io/v3/"+infuraKey
-# ethrpc = "wss://speedy-nodes-nyc.moralis.io/01143cdca68914e18b964873/eth/mainnet/archive/ws"
-# bscrpc = "wss://speedy-nodes-nyc.moralis.io/01143cdca68914e18b964873/bsc/mainnet/ws"
 bscrpc = "https://bsc-dataseed.binance.org/"
 web3 = Web3(Web3.HTTPProvider(bscrpc))  
 # web3 = Web3(Web3.WebsocketProvider(bscrpc))
- 
-# web3 = Web3(Web3.HTTPProvider("https://eth-mainnet.functionx.io"))
 print(web3.isConnected())
 print(web3.eth.blockNumber)
 latestBlk = web3.eth.blockNumber
